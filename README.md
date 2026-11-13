@@ -21,9 +21,13 @@ There is no build step, backend, external runtime dependency or account. The app
 
 Moong dal 500 g; urad dal 350 g; sabudana 250 g; coriander 177 g; rice 2,000 g; cumin 225 g; chana dal 1,000 g; poha 100 g.
 
-### Recipe ingredients (separate from grinding)
+### Latest measured recipe batch (separate from grinding)
 
-For the base 3.5 kg flour batch: ajwain 200 g; hing 100 g; oil 1,000 g; red chilli 200 g; sesame 200 g; salt 300 g. Quantities in the calculator are normalized to 1 kg finished chakali using 3.5 kg flour -> 5.25 kg finished chakali. Oil is the listed input quantity; actual oil consumption/reuse during frying must be measured separately before using costing commercially.
+The latest user-recorded batch uses **1,070 g flour**, **1,000 ml oil**, **35 g sesame**, **12 g ajwain**, **13 g red chilli**, **28 g salt**, **1 g hing**, and **1,260 ml water**. The app normalizes these quantities to 1 kg flour and, for the existing finished-product planner, divides them by the current **1.5 kg finished chakali per 1 kg flour** conversion. This keeps the existing planner basis intact; measure and enter the actual cooled finished output from this batch to validate or revise that conversion. Oil quantity is the batch input, not measured oil absorption/consumption; track actual oil use separately for commercial costing.
+
+### Print material checklist
+
+The Production plan page scales both lists together for any entered target weight: grinding raw materials and recipe/mixing ingredients. Use the **Print both material lists** action to print a clean A4 checklist. Quick targets include 1, 10, 15, 100 and 1,000 kg; any other positive target can be entered manually.
 
 ### Checklist formulas
 
