@@ -8,10 +8,10 @@
     ['धणे', 177, 140], ['जिरे', 225, 220], ['तांदूळ', 2000, 55],
     ['हरभरा डाळ', 1000, 90], ['पोहे', 100, 60]
   ];
-  // Latest measured baseline for 1 kg finished chakali, as reported by the user.
+  // Authoritative recipe baseline: 1 kg flour yields 1.5 kg finished chakali.
   const recipeDefaults = [
-    { name: 'चकलीचे पीठ', qty: 1070, unit: 'g', rate: 0, type: 'flour' },
-    { name: 'तेल', qty: 1000, unit: 'ml', rate: 140 },
+    { name: 'चकलीचे पीठ', qty: 1000, unit: 'g', rate: 0, type: 'flour' },
+    { name: 'तेल', qty: 1000, unit: 'g', rate: 140 },
     { name: 'तीळ', qty: 35, unit: 'g', rate: 220 },
     { name: 'ओवा', qty: 12, unit: 'g', rate: 300 },
     { name: 'लाल मिरची', qty: 13, unit: 'g', rate: 400 },
@@ -24,10 +24,10 @@
     flourProduced: 3.5,
     grindingCost: 150,
     recipe: recipeDefaults.map(item => ({ ...item })),
-    recipeVersion: 5,
+    recipeVersion: 6,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
-    flourYield: 1.5 / 1.07, // 1.07 kg flour yields 1.5 kg finished chakali.
+    flourYield: 1.5, // 1 kg flour yields 1.5 kg finished chakali.
     piecesMinPerFlourKg: 65,
     piecesMaxPerFlourKg: 68,
     productionHistory: [],
@@ -62,7 +62,7 @@
       grindingYield: 'Grinding yield', flourCostPerKg: 'Flour cost per kg', saveGrinding: 'Save grinding batch',
       recipeEyebrow: 'YOUR SIGNATURE RECIPE', recipeTitle: 'Recipe & costing',
       recipeCopy: 'Understand your per-kilo costs and keep pricing decisions close at hand.',
-      recipeIngredients: 'Recipe ingredients', recipeIngredientCopy: 'Quantities below are for the measured 1.5 kg finished batch.',
+      recipeIngredients: 'Recipe ingredients', recipeIngredientCopy: 'Quantities below are for 1 kg flour, yielding 1.5 kg finished chakali.',
       otherCosts: 'Other production costs', otherCostsCopy: 'Packaging, fuel, utilities and labour.', addExpense: '+ Add expense',
       estimatedCost: 'Estimated cost / kg', sellingPrice: 'Selling price per kg (₹)', grossProfit: 'Gross profit / kg',
       grossMargin: 'Gross margin', saveRecipe: 'Save recipe & costing', productionEyebrow: 'BATCH PLANNING',
@@ -87,7 +87,7 @@
       printTitle: 'Production material checklist', printTargetLabel: 'Production target', printDateLabel: 'Prepared on',
       newIngredient: 'नवीन साहित्य',
       newExpense: 'Other expense', remove: 'Remove',
-      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / 1.5 kg batch', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg or L)',
+      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / 1 kg flour batch', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg or L)',
       costPerKgHeader: 'Cost / kg', expenseName: 'Expense name'
     },
     mr: {
@@ -118,7 +118,7 @@
       grindingYield: 'दळण उत्पादन टक्केवारी', flourCostPerKg: 'प्रति किलो पिठाचा खर्च', saveGrinding: 'दळण बॅच जतन करा',
       recipeEyebrow: 'तुमची खास रेसिपी', recipeTitle: 'रेसिपी आणि खर्च',
       recipeCopy: 'प्रति किलो उत्पादन खर्च समजून घ्या आणि विक्री दराचे नियोजन करा.',
-      recipeIngredients: 'रेसिपीचे साहित्य', recipeIngredientCopy: 'खालील प्रमाण प्रत्यक्ष १.५ किलो तयार चकलीच्या बॅचचे आहे.',
+      recipeIngredients: 'रेसिपीचे साहित्य', recipeIngredientCopy: 'खालील प्रमाण १ किलो पिठासाठी आहे; त्यापासून १.५ किलो चकली तयार होते.',
       otherCosts: 'इतर उत्पादन खर्च', otherCostsCopy: 'पॅकिंग, इंधन, वीज आणि मजुरी.', addExpense: '+ खर्च जोडा',
       estimatedCost: 'अंदाजे खर्च / किलो', sellingPrice: 'विक्री दर प्रति किलो (₹)', grossProfit: 'नफा / किलो',
       grossMargin: 'नफ्याचे प्रमाण', saveRecipe: 'रेसिपी आणि खर्च जतन करा', productionEyebrow: 'बॅच नियोजन',
@@ -143,7 +143,7 @@
       printTitle: 'उत्पादन साहित्य यादी', printTargetLabel: 'उत्पादनाचे लक्ष्य', printDateLabel: 'तयार केल्याची तारीख',
       newIngredient: 'नवीन साहित्य',
       newExpense: 'इतर खर्च', remove: 'काढून टाका',
-      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / १.५ किलो बॅच', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो किंवा लिटर)',
+      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / १ किलो पिठासाठी', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो किंवा लिटर)',
       costPerKgHeader: 'खर्च / किलो', expenseName: 'खर्चाचे नाव'
     }
   };
@@ -266,7 +266,27 @@
         }
         saved.recipeVersion = 4;
       }
-      saved.flourYield = num(saved.flourYield) || (1.5 / 1.07);
+      if (num(old.recipeVersion) < 6) {
+        const previousYield = num(old.flourYield);
+        if (!previousYield || Math.abs(previousYield - (1.5 / 1.07)) < 0.00001) {
+          saved.flourYield = 1.5;
+        }
+        const defaultRecipe = cloneDefaults().recipe;
+        const previousRates = new Map(saved.recipe
+          .filter(item => item.type !== 'flour')
+          .map(item => [item.name, num(item.rate)]));
+        const defaultNames = new Set(defaultRecipe.map(item => item.name));
+        const customItems = saved.recipe.filter(item => item.type !== 'flour' && !defaultNames.has(item.name));
+        saved.recipe = [
+          ...defaultRecipe.map(item => ({
+            ...item,
+            rate: previousRates.has(item.name) ? previousRates.get(item.name) : item.rate
+          })),
+          ...customItems
+        ];
+        saved.recipeVersion = 6;
+      }
+      saved.flourYield = num(saved.flourYield) || 1.5;
       saved.piecesMinPerFlourKg = num(saved.piecesMinPerFlourKg) || 65;
       saved.piecesMaxPerFlourKg = num(saved.piecesMaxPerFlourKg) || 68;
       saved.productionHistory = Array.isArray(old.productionHistory)
