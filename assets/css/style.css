@@ -244,3 +244,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* Simple production checklist and printer-friendly output */
+.production-actions { display: flex; justify-content: flex-end; margin: 0 0 18px; }
+.print-only { display: none; }
+.print-heading { padding: 0 0 14px; border-bottom: 1px solid #d8d0c7; margin-bottom: 18px; color: #2f261f; }
+.print-heading h1 { margin: 0 0 6px; font-size: 22px; }
+.print-heading p { margin: 0; color: #5f554d; font-size: 12px; }
+@media (max-width: 760px) { .production-actions { justify-content: stretch; } .production-actions .btn { width: 100%; } .page-intro h2 { font-size: 24px; } .surface, .kpi-card { box-shadow: none; } .welcome-row { background: #f4ecdf; } }
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  html, body { background: #fff !important; color: #171411 !important; }
+  .sidebar, .topbar, .mobile-nav, .app-footer, .toast-region, .production-settings, .production-actions, .page-view:not(#production) { display: none !important; }
+  .app-main { margin: 0 !important; min-height: 0 !important; }
+  .content { width: 100% !important; min-height: 0 !important; padding: 0 !important; }
+  #production { display: block !important; animation: none !important; }
+  #production .page-intro { display: none !important; }
+  #production .print-heading { display: block !important; }
+  #production .two-column-layout { grid-template-columns: 1fr !important; gap: 8mm !important; }
+  #production .surface { padding: 7mm !important; border: 1px solid #d8d0c7 !important; border-radius: 0 !important; box-shadow: none !important; break-inside: avoid; }
+  #production .card-heading { margin-bottom: 10px !important; }
+  #production .data-table { width: 100% !important; min-width: 0 !important; font-size: 10pt !important; }
+  #production .data-table th, #production .data-table td { padding: 6px 5px !important; color: #171411 !important; white-space: normal !important; }
+  #production .table-wrap { overflow: visible !important; }
+  #production .result-box { background: #fff !important; border-color: #ddd !important; }
+  #production .disclaimer { color: #51483f !important; }
+}
