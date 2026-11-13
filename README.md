@@ -14,8 +14,8 @@ There is no build step, backend, external runtime dependency or account. The app
 - Actual flour output from that grinding batch: **3,500 g (3.5 kg)**.
 - Grinding yield: **76.05%**.
 - Latest measured production batch: **1,070 g flour produces 1.5 kg finished chakali** (finished yield ≈ **1.4019 kg per 1 kg flour**).
-- 1 kg flour produces approximately **60–65 chakalis**; the calculator shows a range based on flour required.
-- Quick targets: 1, 2, 3, 4, 10, 20, 50 and 100 kg finished chakali.
+- 1 kg finished chakali contains approximately **65–68 chakalis**; the calculator scales this count directly from the finished-weight target.
+- Quick targets: 250 g, 500 g, 1, 2, 3, 4, 10, 15, 20, 30, 50, 100 and 1,000 kg finished chakali.
 
 ### Grinding ingredients
 
@@ -36,7 +36,7 @@ For target finished chakali **T kg**:
 - Flour required = T x (1.07 / 1.5) kg, based on the latest measured 1.5 kg finished batch.
 - Grinding ingredient required = each base grinding ingredient x (flour required / 3.5).
 - Recipe ingredient required = each measured recipe ingredient x (T / 1.5), because the entered quantities produce 1.5 kg finished chakali.
-- Chakali count range = (flour required x 60) to (flour required x 65).
+- Chakali count range = (finished chakali target x 65) to (finished chakali target x 68).
 - Raw grinding baseline: 4.602 kg raw -> 3.5 kg flour.
 
 These are the existing production formulas; the interface redesign and new tracking features do not change them.
