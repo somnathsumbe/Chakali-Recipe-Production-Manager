@@ -21,9 +21,22 @@ There is no build step, backend, external runtime dependency or account. The app
 
 Moong dal 500 g; urad dal 350 g; sabudana 250 g; coriander 177 g; rice 2,000 g; cumin 225 g; chana dal 1,000 g; poha 100 g.
 
-### Latest measured recipe batch (separate from grinding)
+### Authoritative recipe baseline (separate from grinding)
 
-The latest user-recorded batch produces **1.5 kg finished chakali** from **1,070 g flour**, **1,000 ml oil**, **35 g sesame**, **12 g ajwain**, **13 g red chilli**, **28 g salt**, **1 g hing**, and **1,260 ml water**. All recipe ingredients are scaled by target finished weight / 1.5. The 60–65 piece estimate remains per kg of flour. Oil quantity is the batch input, not measured oil absorption/consumption; track actual oil use separately for commercial costing.
+The confirmed baseline is **1,000 g flour -> 1.5 kg finished chakali**. For this 1 kg flour batch, use:
+
+- Oil: **1,030 g total** (1,000 g recipe oil + 30 g oil for kneading)
+- Sesame: **35 g**
+- Ajwain: **12 g**
+- Red chilli: **13 g**
+- Salt: **28 g**
+- Hing: **1 g**
+- Turmeric: **2 g**
+- Water: **1,260 ml** (existing saved baseline; adjust if a new measured quantity is supplied)
+
+For a finished chakali target of **T kg**, every recipe ingredient is scaled by **T / 1.5**. Therefore, for 1 kg finished chakali use two-thirds of the baseline; for 500 g use one-third. The 1 kg flour batch produces 1.5 kg finished chakali.
+
+The 65–68 piece estimate is per kg of finished chakali. Oil is recorded as recipe input; actual frying oil consumption/absorption should be measured separately for commercial costing.
 
 ### Print material checklist
 
@@ -35,7 +48,7 @@ For target finished chakali **T kg**:
 
 - Flour required = T / 1.5 kg, based on 1 kg flour producing 1.5 kg finished chakali.
 - Grinding ingredient required = each base grinding ingredient x (flour required / 3.5).
-- Recipe ingredient required = each measured recipe ingredient x (T / 1.5), because the entered quantities produce 1.5 kg finished chakali.
+- Recipe ingredient required = each 1 kg flour baseline recipe ingredient x (T / 1.5), because 1 kg flour produces 1.5 kg finished chakali.
 - Chakali count range = (finished chakali target x 65) to (finished chakali target x 68).
 - Raw grinding baseline: 4.602 kg raw -> 3.5 kg flour.
 
