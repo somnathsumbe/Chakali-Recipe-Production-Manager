@@ -24,12 +24,12 @@
     flourProduced: 3.5,
     grindingCost: 150,
     recipe: recipeDefaults.map(item => ({ ...item })),
-    recipeVersion: 3,
+    recipeVersion: 5,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
     flourYield: 1.5 / 1.07, // 1.07 kg flour yields 1.5 kg finished chakali.
-    piecesMinPerFlourKg: 60,
-    piecesMaxPerFlourKg: 65,
+    piecesMinPerFlourKg: 65,
+    piecesMaxPerFlourKg: 68,
     productionHistory: [],
     language: 'mr'
   };
@@ -68,7 +68,7 @@
       grossMargin: 'Gross margin', saveRecipe: 'Save recipe & costing', productionEyebrow: 'BATCH PLANNING',
       productionTitle: 'Production material checklist',
       productionCopy: 'Scale your grinding ingredients and recipe materials for the selected chakali target.',
-      pieceRangeLabel: 'Pieces from 1 kg flour', to: 'to', target: 'Finished chakali target',
+      pieceRangeLabel: 'Pieces from 1 kg finished chakali', to: 'to', target: 'Finished chakali target',
       estimatedTotalCost: 'Estimated total cost', rawChecklist: 'Grinding raw material checklist',
       rawChecklistCopy: 'Scaled from your saved grinding batch.', perKgChakali: 'Per 1 kg chakali',
       forTarget: 'For this target', baseline: 'Baseline batch', recipeChecklist: 'Recipe material checklist',
@@ -124,7 +124,7 @@
       grossMargin: 'नफ्याचे प्रमाण', saveRecipe: 'रेसिपी आणि खर्च जतन करा', productionEyebrow: 'बॅच नियोजन',
       productionTitle: 'उत्पादन साहित्य यादी',
       productionCopy: 'निवडलेल्या चकलीच्या लक्ष्याप्रमाणे दळणाचे व रेसिपीचे साहित्य मोजा.',
-      pieceRangeLabel: '१ किलो पिठापासून नग', to: 'ते', target: 'तयार चकलीचे लक्ष्य',
+      pieceRangeLabel: '१ किलो तयार चकलीमधील नग', to: 'ते', target: 'तयार चकलीचे लक्ष्य',
       estimatedTotalCost: 'अंदाजे एकूण खर्च', rawChecklist: 'दळणाच्या कच्च्या मालाची यादी',
       rawChecklistCopy: 'जतन केलेल्या दळण बॅचच्या प्रमाणात.', perKgChakali: '१ किलो चकलीसाठी',
       forTarget: 'या लक्ष्याकरिता', baseline: 'मूळ बॅच', recipeChecklist: 'रेसिपी साहित्य यादी',
@@ -252,6 +252,13 @@
         // Upgrade the recipe schema while preserving custom ingredient prices.
         saved.recipeVersion = 3;
       }
+      if (num(old.recipeVersion) < 5) {
+        const oldMin = num(old.piecesMinPerFlourKg);
+        const oldMax = num(old.piecesMaxPerFlourKg);
+        saved.piecesMinPerFlourKg = (!oldMin || oldMin === 60) ? 65 : oldMin;
+        saved.piecesMaxPerFlourKg = (!oldMax || oldMax === 65) ? 68 : oldMax;
+        saved.recipeVersion = 5;
+      }
       if (num(old.recipeVersion) < 4) {
         const previousYield = num(old.flourYield);
         if (!previousYield || Math.abs(previousYield - (1 / 1.07)) < 0.00001 || previousYield === 1.5) {
@@ -260,8 +267,8 @@
         saved.recipeVersion = 4;
       }
       saved.flourYield = num(saved.flourYield) || (1.5 / 1.07);
-      saved.piecesMinPerFlourKg = num(old.piecesMinPerFlourKg) || 60;
-      saved.piecesMaxPerFlourKg = num(old.piecesMaxPerFlourKg) || 65;
+      saved.piecesMinPerFlourKg = num(saved.piecesMinPerFlourKg) || 65;
+      saved.piecesMaxPerFlourKg = num(saved.piecesMaxPerFlourKg) || 68;
       saved.productionHistory = Array.isArray(old.productionHistory)
         ? old.productionHistory.filter(run => run && Number.isFinite(Number(run.target)) && Number(run.target) > 0 && run.createdAt)
         : [];
@@ -306,8 +313,8 @@
     const scale = state.flourProduced > 0 ? flourNeed / state.flourProduced : 0;
     let rawTotal = 0;
     state.raw.forEach(item => { rawTotal += num(item.grams) * scale; });
-    const piecesMin = flourNeed * minPieces;
-    const piecesMax = flourNeed * maxPieces;
+    const piecesMin = target * minPieces;
+    const piecesMax = target * maxPieces;
     const rawCostForTarget = state.flourProduced > 0
       ? (rawCost() + num(state.grindingCost)) * flourNeed / state.flourProduced
       : 0;
