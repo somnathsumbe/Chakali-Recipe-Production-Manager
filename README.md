@@ -1,32 +1,46 @@
 # Chakali Recipe & Production Manager
 
-A responsive, browser-based chakali recipe, costing and production planning tool.
+Responsive chakali recipe, costing and production planner.
 
 ## Stack
-- HTML5, CSS3
-- Bootstrap 5.3
+- HTML5, CSS3, Bootstrap 5.3
 - Vanilla JavaScript (ES6)
-- LocalStorage (no backend, no database, no framework)
+- Browser LocalStorage only; no backend or database
 
 ## Run locally
-Open `index.html` in a modern browser. An internet connection is needed to load Bootstrap from jsDelivr CDN. All app data is saved in the browser's LocalStorage.
+Open \`index.html\` in a modern browser. An internet connection is required for Bootstrap from jsDelivr. Data is stored in the current browser profile. Export JSON backups regularly.
 
-## Features in v1.0
-- Raw ingredient list with gram weights and per-kg rates
-- Total raw material weight, kilograms and estimated raw cost
-- Grinding output weight, grinding charge, yield percentage and flour cost estimate
-- Per-kg chakali recipe ingredients
-- Oil, packaging, utilities and labour expenses
-- Estimated cost per kg, selling price, gross profit and margin
-- Order calculator for any chakali quantity, including 10 kg; estimated pieces and ingredient quantities
-- Save planned production orders locally
-- JSON export/import backup
+## Separate ingredient workflows
 
-## Sample raw-material recipe
-Moong dal 500 g, urad dal 55 g, sabudana 225 g, coriander 177 g, cumin 55 g, rice 2,000 g, chana dal 1,000 g and poha 100 g.
+### Grinding — only these 8 raw materials
+- मूग डाळ — 500 g
+- उडीद डाळ — 55 g
+- साबुदाणा — 225 g
+- धणे — 177 g
+- जिरे — 55 g
+- तांदूळ — 2,000 g
+- हरभरा डाळ — 1,000 g
+- पोहे — 100 g
 
-## Important calculation notes
-Sample quantities and prices are editable. The sample grinding flour output (3.7 kg), per-kg chakali ingredient quantities, expense amounts and pieces-per-kg are placeholders for demonstration. Replace them with actual measured production data before using the costing for business decisions. Flour conversion is estimated from the entered grinding batch; production planning scales recipe quantities linearly.
+Grinding records actual flour output and grinding charges. Recipe ingredients are deliberately excluded from the grinding list.
 
-## Data and privacy
-Data is stored only in the current browser profile. Clearing browser storage/site data can remove it. Use Export data regularly to keep a backup. This is a frontend-only app; LocalStorage does not synchronize across devices.
+### Recipe — editable sample quantities per 1 kg finished chakali
+- चकलीचे पीठ — 850 g
+- तेल — 100 ml
+- ओवा — 5 g
+- हिंग — 1 g
+- लाल मिरची — 25 g
+- तीळ — 30 g
+- मीठ — 15 g
+
+Oil rate is entered per litre; other recipe ingredient rates are per kg. Quantities and rates are sample values and must be replaced with actual production measurements and purchase rates.
+
+## Costing and production
+- Flour cost/kg = (grinding raw-material cost + grinding charges) / actual flour output in kg.
+- Recipe flour cost is allocated using the flour grams per kg chakali.
+- Oil and spices are costed in Recipe. Packing, utilities and labour remain additional expenses.
+- Production planner scales each recipe ingredient by requested chakali kg and estimates total cost and pieces.
+- Validate real dough/final-product yield, oil absorption, wastage and packaging costs before relying on business costing.
+
+## Existing data migration
+Existing v1 data is retained where possible. Missing recipe ingredients are added automatically; legacy “तिखट” is mapped to “लाल मिरची”, and the old oil expense line is removed to prevent double-counting now that oil belongs in Recipe.
