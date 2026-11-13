@@ -87,7 +87,7 @@
       printTitle: 'Production material checklist', printTargetLabel: 'Production target', printDateLabel: 'Prepared on',
       newIngredient: 'नवीन साहित्य',
       newExpense: 'Other expense', remove: 'Remove',
-      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / kg chakali', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg or L)',
+      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / 1.5 kg batch', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg or L)',
       costPerKgHeader: 'Cost / kg', expenseName: 'Expense name'
     },
     mr: {
@@ -143,7 +143,7 @@
       printTitle: 'उत्पादन साहित्य यादी', printTargetLabel: 'उत्पादनाचे लक्ष्य', printDateLabel: 'तयार केल्याची तारीख',
       newIngredient: 'नवीन साहित्य',
       newExpense: 'इतर खर्च', remove: 'काढून टाका',
-      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / किलो चकली', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो किंवा लिटर)',
+      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / १.५ किलो बॅच', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो किंवा लिटर)',
       costPerKgHeader: 'खर्च / किलो', expenseName: 'खर्चाचे नाव'
     }
   };
@@ -343,7 +343,7 @@
         <td><input class="form-control" type="number" min="0" step="any" data-list="recipe" data-i="${index}" data-k="qty" aria-label="${escapeHtml(t('quantityHeader'))}" value="${num(item.qty)}" ${item.type === 'flour' ? 'readonly' : ''}></td>
         <td><input class="form-control" value="${escapeHtml(item.unit || 'g')}" aria-label="${escapeHtml(t('unitHeader'))}" readonly></td>
         <td><input class="form-control" type="number" min="0" data-list="recipe" data-i="${index}" data-k="rate" aria-label="${escapeHtml(t('rate'))}" value="${num(item.rate)}" ${item.type === 'flour' ? 'disabled' : ''} inputmode="decimal"></td>
-        <td>${money(itemCost(item))}</td>
+        <td>${money(itemCost(item) / 1.5)}</td>
         <td><button class="remove-button" type="button" data-remove="recipe" data-i="${index}" aria-label="${t('remove')} ${escapeHtml(item.name)}" ${item.type === 'flour' ? 'disabled' : ''}>×</button></td>
       </tr>`).join('');
     elements.expenseList.innerHTML = state.expenses.map((expense, index) => `
