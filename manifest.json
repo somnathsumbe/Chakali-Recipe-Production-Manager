@@ -1,0 +1,19 @@
+{
+  "name": "Chakali Recipe & Production Manager",
+  "short_name": "Chakali Manager",
+  "description": "Plan chakali production, track raw material stock, and manage recipe costs offline.",
+  "lang": "mr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f3ea",
+  "theme_color": "#6f3e25",
+  "icons": [
+    {
+      "src": "assets/icons/chakali.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
