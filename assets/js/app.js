@@ -8,21 +8,25 @@
     ['धणे', 177, 140], ['जिरे', 225, 220], ['तांदूळ', 2000, 55],
     ['हरभरा डाळ', 1000, 90], ['पोहे', 100, 60]
   ];
-  // Recipe quantities are normalized per 1 kg finished chakali from the user's 3.5 kg flour batch (5.25 kg finished output).
+  // Actual user batch: 1,070 g flour, 1,000 ml oil, 35 g sesame, 12 g ajwain,
+  // 13 g chilli, 28 g salt, 1 g hing and 1,260 ml water.
+  // Normalize to 1 kg flour, then retain the existing 1 kg flour -> 1.5 kg finished yield.
   const recipeDefaults = [
     { name: 'चकलीचे पीठ', qty: 666.6667, unit: 'g', rate: 0, type: 'flour' },
-    { name: 'तेल', qty: 190.4762, unit: 'g', rate: 140 },
-    { name: 'ओवा', qty: 38.0952, unit: 'g', rate: 300 },
-    { name: 'हिंग', qty: 19.0476, unit: 'g', rate: 1800 },
-    { name: 'लाल मिरची', qty: 38.0952, unit: 'g', rate: 400 },
-    { name: 'तीळ', qty: 38.0952, unit: 'g', rate: 220 },
-    { name: 'मीठ', qty: 57.1429, unit: 'g', rate: 20 }
+    { name: 'तेल', qty: 623.0530, unit: 'ml', rate: 140 },
+    { name: 'तीळ', qty: 21.8069, unit: 'g', rate: 220 },
+    { name: 'ओवा', qty: 7.4766, unit: 'g', rate: 300 },
+    { name: 'लाल मिरची', qty: 8.0997, unit: 'g', rate: 400 },
+    { name: 'मीठ', qty: 17.4455, unit: 'g', rate: 20 },
+    { name: 'हिंग', qty: 0.6231, unit: 'g', rate: 1800 },
+    { name: 'पाणी', qty: 785.0467, unit: 'ml', rate: 0 }
   ];
   const defaults = {
     raw: rawDefaults.map(([name, grams, rate]) => ({ name, grams, rate })),
     flourProduced: 3.5,
     grindingCost: 150,
     recipe: recipeDefaults.map(item => ({ ...item })),
+    recipeVersion: 2,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
     flourYield: 1.5,
@@ -81,9 +85,11 @@
       saveFailed: 'Could not save to this browser. Check available device storage.',
       loadFailed: 'Saved data could not be read. Defaults are shown; export a backup before making changes.',
       updateReady: 'A new version is ready.', updateButton: 'Refresh to update', serviceWorkerFailed: 'Offline updates are unavailable in this browser.',
-      invalidTarget: 'Enter a production target greater than zero.', newIngredient: 'नवीन साहित्य',
+      invalidTarget: 'Enter a production target greater than zero.', printChecklist: 'Print both material lists',
+      printTitle: 'Production material checklist', printTargetLabel: 'Production target', printDateLabel: 'Prepared on',
+      newIngredient: 'नवीन साहित्य',
       newExpense: 'Other expense', remove: 'Remove',
-      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / kg chakali', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg)',
+      rawHeader: 'Ingredient / साहित्य', quantityHeader: 'Qty / kg chakali', unitHeader: 'Unit', rateHeader: 'Rate (₹/kg or L)',
       costPerKgHeader: 'Cost / kg', expenseName: 'Expense name'
     },
     mr: {
@@ -135,9 +141,11 @@
       saveFailed: 'ब्राउझरमध्ये जतन करता आले नाही. उपकरणातील उपलब्ध जागा तपासा.',
       loadFailed: 'जतन केलेली माहिती वाचता आली नाही. बदल करण्यापूर्वी बॅकअप निर्यात करा.',
       updateReady: 'नवीन आवृत्ती उपलब्ध आहे.', updateButton: 'अपडेटसाठी पुन्हा उघडा', serviceWorkerFailed: 'या ब्राउझरमध्ये ऑफलाइन अपडेट उपलब्ध नाही.',
-      invalidTarget: 'शून्यापेक्षा मोठे उत्पादन लक्ष्य भरा.', newIngredient: 'नवीन साहित्य',
+      invalidTarget: 'शून्यापेक्षा मोठे उत्पादन लक्ष्य भरा.', printChecklist: 'दोन्ही साहित्य याद्या प्रिंट करा',
+      printTitle: 'उत्पादन साहित्य यादी', printTargetLabel: 'उत्पादनाचे लक्ष्य', printDateLabel: 'तयार केल्याची तारीख',
+      newIngredient: 'नवीन साहित्य',
       newExpense: 'इतर खर्च', remove: 'काढून टाका',
-      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / किलो चकली', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो)',
+      rawHeader: 'साहित्य', quantityHeader: 'प्रमाण / किलो चकली', unitHeader: 'एकक', rateHeader: 'दर (₹/किलो किंवा लिटर)',
       costPerKgHeader: 'खर्च / किलो', expenseName: 'खर्चाचे नाव'
     }
   };
@@ -230,6 +238,19 @@
         saved.recipe.forEach(item => {
           if (oldRates[item.name] !== undefined && item.type !== 'flour') item.rate = num(oldRates[item.name]);
         });
+      }
+      if (num(old.recipeVersion) < 2) {
+        const previousRates = new Map(saved.recipe
+          .filter(item => item.type !== 'flour')
+          .map(item => [item.name, num(item.rate)]));
+        const updatedRecipe = cloneDefaults().recipe.map(item => ({
+          ...item,
+          rate: previousRates.has(item.name) ? previousRates.get(item.name) : item.rate
+        }));
+        const updatedNames = new Set(updatedRecipe.map(item => item.name));
+        const customItems = saved.recipe.filter(item => item.type !== 'flour' && !updatedNames.has(item.name));
+        saved.recipe = [...updatedRecipe, ...customItems];
+        saved.recipeVersion = 2;
       }
       saved.flourYield = num(old.flourYield) || 1.5;
       saved.piecesMinPerFlourKg = num(old.piecesMinPerFlourKg) || 60;
@@ -350,6 +371,7 @@
     byId('summaryPieces').textContent = `${fmt(metrics.piecesMin)}–${fmt(metrics.piecesMax)}`;
     byId('summaryRaw').textContent = `${fmt(metrics.rawTotal / 1000)} kg`;
     byId('summaryCost').textContent = money(metrics.totalCost);
+    byId('printTarget').textContent = fmt(metrics.target) + ' kg';
     return metrics;
   }
 
@@ -600,6 +622,18 @@
     renderDashboard(metrics);
   });
   byId('openProduction').addEventListener('click', () => showView('production'));
+  byId('printChecklist').addEventListener('click', () => {
+    const metrics = productionMetrics();
+    if (!metrics.target) {
+      toast(t('invalidTarget'), { error: true });
+      return;
+    }
+    const locale = state.language === 'mr' ? 'mr-IN' : 'en-IN';
+    byId('printDate').textContent = new Intl.DateTimeFormat(locale, {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }).format(new Date());
+    window.print();
+  });
   byId('recordProduction').addEventListener('click', recordProduction);
   byId('saveGrinding').addEventListener('click', () => {
     if (save()) toast(t('grindingSaved'));
