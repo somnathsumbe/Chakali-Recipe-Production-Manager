@@ -11,12 +11,13 @@
   // Authoritative recipe baseline: 1 kg flour yields 1.5 kg finished chakali.
   const recipeDefaults = [
     { name: 'चकलीचे पीठ', qty: 1000, unit: 'g', rate: 0, type: 'flour' },
-    { name: 'तेल', qty: 1000, unit: 'g', rate: 140 },
+    { name: 'तेल', qty: 1030, unit: 'g', rate: 140 },
     { name: 'तीळ', qty: 35, unit: 'g', rate: 220 },
     { name: 'ओवा', qty: 12, unit: 'g', rate: 300 },
     { name: 'लाल मिरची', qty: 13, unit: 'g', rate: 400 },
     { name: 'मीठ', qty: 28, unit: 'g', rate: 20 },
     { name: 'हिंग', qty: 1, unit: 'g', rate: 1800 },
+    { name: 'हळद', qty: 2, unit: 'g', rate: 300 },
     { name: 'पाणी', qty: 1260, unit: 'ml', rate: 0 }
   ];
   const defaults = {
@@ -24,7 +25,7 @@
     flourProduced: 3.5,
     grindingCost: 150,
     recipe: recipeDefaults.map(item => ({ ...item })),
-    recipeVersion: 6,
+    recipeVersion: 7,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
     flourYield: 1.5, // 1 kg flour yields 1.5 kg finished chakali.
@@ -285,6 +286,23 @@
           ...customItems
         ];
         saved.recipeVersion = 6;
+      }
+      if (num(old.recipeVersion) < 7) {
+        // Refresh the authoritative 1 kg flour recipe while retaining saved ingredient rates and custom rows.
+        const defaultRecipe = cloneDefaults().recipe;
+        const previousRates = new Map(saved.recipe
+          .filter(item => item.type !== 'flour')
+          .map(item => [item.name, num(item.rate)]));
+        const defaultNames = new Set(defaultRecipe.map(item => item.name));
+        const customItems = saved.recipe.filter(item => item.type !== 'flour' && !defaultNames.has(item.name));
+        saved.recipe = [
+          ...defaultRecipe.map(item => ({
+            ...item,
+            rate: previousRates.has(item.name) ? previousRates.get(item.name) : item.rate
+          })),
+          ...customItems
+        ];
+        saved.recipeVersion = 7;
       }
       saved.flourYield = num(saved.flourYield) || 1.5;
       saved.piecesMinPerFlourKg = num(saved.piecesMinPerFlourKg) || 65;
