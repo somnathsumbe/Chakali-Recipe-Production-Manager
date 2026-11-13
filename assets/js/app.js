@@ -27,7 +27,7 @@
     recipeVersion: 3,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
-    flourYield: 0.9345794393,
+    flourYield: 1.5 / 1.07, // 1.07 kg flour yields 1.5 kg finished chakali.
     piecesMinPerFlourKg: 60,
     piecesMaxPerFlourKg: 65,
     productionHistory: [],
@@ -62,7 +62,7 @@
       grindingYield: 'Grinding yield', flourCostPerKg: 'Flour cost per kg', saveGrinding: 'Save grinding batch',
       recipeEyebrow: 'YOUR SIGNATURE RECIPE', recipeTitle: 'Recipe & costing',
       recipeCopy: 'Understand your per-kilo costs and keep pricing decisions close at hand.',
-      recipeIngredients: 'Recipe ingredients', recipeIngredientCopy: 'Quantities are calculated per 1 kg of finished chakali.',
+      recipeIngredients: 'Recipe ingredients', recipeIngredientCopy: 'Quantities below are for the measured 1.5 kg finished batch.',
       otherCosts: 'Other production costs', otherCostsCopy: 'Packaging, fuel, utilities and labour.', addExpense: '+ Add expense',
       estimatedCost: 'Estimated cost / kg', sellingPrice: 'Selling price per kg (₹)', grossProfit: 'Gross profit / kg',
       grossMargin: 'Gross margin', saveRecipe: 'Save recipe & costing', productionEyebrow: 'BATCH PLANNING',
@@ -118,7 +118,7 @@
       grindingYield: 'दळण उत्पादन टक्केवारी', flourCostPerKg: 'प्रति किलो पिठाचा खर्च', saveGrinding: 'दळण बॅच जतन करा',
       recipeEyebrow: 'तुमची खास रेसिपी', recipeTitle: 'रेसिपी आणि खर्च',
       recipeCopy: 'प्रति किलो उत्पादन खर्च समजून घ्या आणि विक्री दराचे नियोजन करा.',
-      recipeIngredients: 'रेसिपीचे साहित्य', recipeIngredientCopy: 'प्रमाण १ किलो तयार चकलीसाठी मोजले जाते.',
+      recipeIngredients: 'रेसिपीचे साहित्य', recipeIngredientCopy: 'खालील प्रमाण प्रत्यक्ष १.५ किलो तयार चकलीच्या बॅचचे आहे.',
       otherCosts: 'इतर उत्पादन खर्च', otherCostsCopy: 'पॅकिंग, इंधन, वीज आणि मजुरी.', addExpense: '+ खर्च जोडा',
       estimatedCost: 'अंदाजे खर्च / किलो', sellingPrice: 'विक्री दर प्रति किलो (₹)', grossProfit: 'नफा / किलो',
       grossMargin: 'नफ्याचे प्रमाण', saveRecipe: 'रेसिपी आणि खर्च जतन करा', productionEyebrow: 'बॅच नियोजन',
@@ -249,10 +249,17 @@
         const customItems = saved.recipe.filter(item => item.type !== 'flour' && !updatedNames.has(item.name));
         saved.recipe = [...updatedRecipe, ...customItems];
         saved.recipeVersion = 3;
-        // Latest measured batch: 1.07 kg flour produces the user's 1 kg finished target.
-        if (!num(old.flourYield) || num(old.flourYield) === 1.5) saved.flourYield = 1 / 1.07;
+        // Upgrade the recipe schema while preserving custom ingredient prices.
+        saved.recipeVersion = 3;
       }
-      saved.flourYield = num(saved.flourYield) || (1 / 1.07);
+      if (num(old.recipeVersion) < 4) {
+        const previousYield = num(old.flourYield);
+        if (!previousYield || Math.abs(previousYield - (1 / 1.07)) < 0.00001 || previousYield === 1.5) {
+          saved.flourYield = 1.5 / 1.07;
+        }
+        saved.recipeVersion = 4;
+      }
+      saved.flourYield = num(saved.flourYield) || (1.5 / 1.07);
       saved.piecesMinPerFlourKg = num(old.piecesMinPerFlourKg) || 60;
       saved.piecesMaxPerFlourKg = num(old.piecesMaxPerFlourKg) || 65;
       saved.productionHistory = Array.isArray(old.productionHistory)
@@ -286,7 +293,7 @@
   }
 
   function recipeCost() {
-    return state.recipe.reduce((total, item) => total + itemCost(item), 0)
+    return state.recipe.reduce((total, item) => total + itemCost(item), 0) / 1.5
       + state.expenses.reduce((total, item) => total + num(item.amount), 0);
   }
 
@@ -305,7 +312,7 @@
       ? (rawCost() + num(state.grindingCost)) * flourNeed / state.flourProduced
       : 0;
     const recipeOtherCost = state.recipe.filter(item => item.type !== 'flour')
-      .reduce((total, item) => total + itemCost(item), 0) * target;
+      .reduce((total, item) => total + itemCost(item), 0) * (target / 1.5);
     const expenseCost = state.expenses.reduce((total, item) => total + num(item.amount), 0) * target;
     return {
       target, yieldKg, flourNeed, scale, rawTotal, piecesMin, piecesMax,
@@ -357,8 +364,8 @@
       return `<tr><td>${escapeHtml(item.name)}</td><td>${fmt(perKg)} g</td><td><strong>${fmt(quantity)} g</strong> <span class="muted">(${fmt(quantity / 1000)} kg)</span></td></tr>`;
     }).join('');
     elements.productionBody.innerHTML = state.recipe.map(item => {
-      const quantity = num(item.qty) * metrics.target;
-      return `<tr><td>${escapeHtml(item.name)}</td><td>${fmt(item.qty)} ${escapeHtml(item.unit)}</td><td><strong>${fmt(quantity)} ${escapeHtml(item.unit)}</strong></td><td>${money(itemCost(item) * metrics.target)}</td></tr>`;
+      const quantity = num(item.qty) * (metrics.target / 1.5);
+      return `<tr><td>${escapeHtml(item.name)}</td><td>${fmt(item.qty)} ${escapeHtml(item.unit)}</td><td><strong>${fmt(quantity)} ${escapeHtml(item.unit)}</strong></td><td>${money(itemCost(item) * (metrics.target / 1.5))}</td></tr>`;
     }).join('');
     byId('rawChecklistTotal').textContent = `${fmt(metrics.rawTotal)} g · ${fmt(metrics.rawTotal / 1000)} kg`;
     byId('flourRequired').textContent = `${fmt(metrics.flourNeed)} kg`;
