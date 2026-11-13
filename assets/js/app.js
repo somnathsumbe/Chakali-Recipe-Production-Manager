@@ -8,28 +8,26 @@
     ['धणे', 177, 140], ['जिरे', 225, 220], ['तांदूळ', 2000, 55],
     ['हरभरा डाळ', 1000, 90], ['पोहे', 100, 60]
   ];
-  // Actual user batch: 1,070 g flour, 1,000 ml oil, 35 g sesame, 12 g ajwain,
-  // 13 g chilli, 28 g salt, 1 g hing and 1,260 ml water.
-  // Normalize to 1 kg flour, then retain the existing 1 kg flour -> 1.5 kg finished yield.
+  // Latest measured baseline for 1 kg finished chakali, as reported by the user.
   const recipeDefaults = [
-    { name: 'चकलीचे पीठ', qty: 666.6667, unit: 'g', rate: 0, type: 'flour' },
-    { name: 'तेल', qty: 623.0530, unit: 'ml', rate: 140 },
-    { name: 'तीळ', qty: 21.8069, unit: 'g', rate: 220 },
-    { name: 'ओवा', qty: 7.4766, unit: 'g', rate: 300 },
-    { name: 'लाल मिरची', qty: 8.0997, unit: 'g', rate: 400 },
-    { name: 'मीठ', qty: 17.4455, unit: 'g', rate: 20 },
-    { name: 'हिंग', qty: 0.6231, unit: 'g', rate: 1800 },
-    { name: 'पाणी', qty: 785.0467, unit: 'ml', rate: 0 }
+    { name: 'चकलीचे पीठ', qty: 1070, unit: 'g', rate: 0, type: 'flour' },
+    { name: 'तेल', qty: 1000, unit: 'ml', rate: 140 },
+    { name: 'तीळ', qty: 35, unit: 'g', rate: 220 },
+    { name: 'ओवा', qty: 12, unit: 'g', rate: 300 },
+    { name: 'लाल मिरची', qty: 13, unit: 'g', rate: 400 },
+    { name: 'मीठ', qty: 28, unit: 'g', rate: 20 },
+    { name: 'हिंग', qty: 1, unit: 'g', rate: 1800 },
+    { name: 'पाणी', qty: 1260, unit: 'ml', rate: 0 }
   ];
   const defaults = {
     raw: rawDefaults.map(([name, grams, rate]) => ({ name, grams, rate })),
     flourProduced: 3.5,
     grindingCost: 150,
     recipe: recipeDefaults.map(item => ({ ...item })),
-    recipeVersion: 2,
+    recipeVersion: 3,
     expenses: [{ name: 'पॅकिंग / Packaging', amount: 25 }, { name: 'गॅस, वीज व मजुरी', amount: 35 }],
     sellingPrice: 450,
-    flourYield: 1.5,
+    flourYield: 0.9345794393,
     piecesMinPerFlourKg: 60,
     piecesMaxPerFlourKg: 65,
     productionHistory: [],
@@ -239,7 +237,7 @@
           if (oldRates[item.name] !== undefined && item.type !== 'flour') item.rate = num(oldRates[item.name]);
         });
       }
-      if (num(old.recipeVersion) < 2) {
+      if (num(old.recipeVersion) < 3) {
         const previousRates = new Map(saved.recipe
           .filter(item => item.type !== 'flour')
           .map(item => [item.name, num(item.rate)]));
@@ -250,9 +248,11 @@
         const updatedNames = new Set(updatedRecipe.map(item => item.name));
         const customItems = saved.recipe.filter(item => item.type !== 'flour' && !updatedNames.has(item.name));
         saved.recipe = [...updatedRecipe, ...customItems];
-        saved.recipeVersion = 2;
+        saved.recipeVersion = 3;
+        // Latest measured batch: 1.07 kg flour produces the user's 1 kg finished target.
+        if (!num(old.flourYield) || num(old.flourYield) === 1.5) saved.flourYield = 1 / 1.07;
       }
-      saved.flourYield = num(old.flourYield) || 1.5;
+      saved.flourYield = num(saved.flourYield) || (1 / 1.07);
       saved.piecesMinPerFlourKg = num(old.piecesMinPerFlourKg) || 60;
       saved.piecesMaxPerFlourKg = num(old.piecesMaxPerFlourKg) || 65;
       saved.productionHistory = Array.isArray(old.productionHistory)
